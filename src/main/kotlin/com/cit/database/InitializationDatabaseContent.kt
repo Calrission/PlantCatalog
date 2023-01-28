@@ -23,21 +23,24 @@ class InitializationDatabaseContent {
         )
 
         fun init(){
-            paymentMethods.filter { PaymentMethods.select { PaymentMethods.title eq it.title}.empty() }.forEach { model ->
-                PaymentMethods.insert {
-                    it[title] = model.title
-                    it[cover] = model.cover
-                }
-            }
+            if (getLocalProperty("enable_init").toBoolean()) {
+                paymentMethods.filter { PaymentMethods.select { PaymentMethods.title eq it.title }.empty() }
+                    .forEach { model ->
+                        PaymentMethods.insert {
+                            it[title] = model.title
+                            it[cover] = model.cover
+                        }
+                    }
 
-            plants.filter { Plants.select { Plants.id eq it.id }.empty() }.forEach{ plant ->
-                Plants.insert {
-                    it[id] = plant.id
-                    it[title] = plant.title
-                    it[description] = plant.description
-                    it[cover] = plant.cover
-                    it[price] = plant.price
-                    it[room] = plant.room
+                plants.filter { Plants.select { Plants.id eq it.id }.empty() }.forEach { plant ->
+                    Plants.insert {
+                        it[id] = plant.id
+                        it[title] = plant.title
+                        it[description] = plant.description
+                        it[cover] = plant.cover
+                        it[price] = plant.price
+                        it[room] = plant.room
+                    }
                 }
             }
         }
