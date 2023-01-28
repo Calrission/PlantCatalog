@@ -1,6 +1,7 @@
 package com.cit.routings
 
 import com.cit.controllers.PaymentMethodsController
+import com.cit.getLocalProperty
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -13,7 +14,7 @@ fun Application.configureConfigRouting(){
 
     routing {
         get("config"){
-            val fileContent = File("config.json").readText(Charset.forName("utf-8"))
+            val fileContent = File(getLocalProperty("config_path")).readText(Charset.forName("utf-8"))
             call.respond(fileContent)
         }
 
