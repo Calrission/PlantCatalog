@@ -2,16 +2,16 @@ package com.cit.database.carts
 
 import com.cit.database.plant.Plant
 import com.cit.database.user.UserViewModel
-import com.cit.models.ModelCart
+import com.cit.models.ModelCartItem
 import org.jetbrains.exposed.sql.Table
 
-data class Cart(
+data class CartItem(
     val id: Int,
     val idUser: Int,
     val idPlant: Int,
-    val count: Int
+    var count: Int
 ){
-    fun toModelCart(user: UserViewModel, plant: Plant): ModelCart = ModelCart(id, plant, user, count)
+    fun toModelCartItem(plant: Plant): ModelCartItem = ModelCartItem(id, plant, count)
 }
 
 object Carts: Table() {
@@ -19,4 +19,6 @@ object Carts: Table() {
     val idUser = integer("idUser")
     val idPlant = integer("idPlant")
     val count = integer("count")
+
+    override val primaryKey = PrimaryKey(id)
 }
