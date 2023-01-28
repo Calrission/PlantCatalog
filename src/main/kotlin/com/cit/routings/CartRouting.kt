@@ -33,5 +33,16 @@ fun Application.configureCartRouting(){
                 call.respond(cartController.insertUpdateCartItemUser(user.id, body.idPlant, body.count))
             }
         }
+
+
+        delete("cart"){
+            val token = call.parameters["token"]
+            val idCart = call.parameters["idCart"]
+            if (token == null || idCart == null ){
+                call.respond("Cart not found")
+            }else {
+                call.respond(cartController.removeCartItem(idCart.toInt()))
+            }
+        }
     }
 }

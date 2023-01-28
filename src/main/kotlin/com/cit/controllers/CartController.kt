@@ -8,6 +8,7 @@ import com.cit.database.plant.Plants
 import com.cit.database.user.DAOUser
 import com.cit.models.ModelCart
 import com.cit.models.ModelError
+import com.cit.models.ModelMessage
 import org.jetbrains.exposed.sql.and
 
 class CartController {
@@ -41,5 +42,12 @@ class CartController {
             val cartItem = daoCart.insert(CartItem(-1, idUser, idPlant, count)) ?: return ModelError("Cart item not inserted")
             return cartItem.toModelCartItem(plant)
         }
+    }
+
+    suspend fun removeCartItem(id: Int): Any{
+        return if (daoCart.delete { Carts.id eq id })
+            ModelMessage("Success")
+        else
+            ModelError("CartItem id=$id not found")
     }
 }
