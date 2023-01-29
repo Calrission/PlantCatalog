@@ -1,0 +1,741 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PlantsCatalog",
+    "description": "API для каталога растений. Сам сервер: http://strukov-artemii.online:8084/ . Путь для картинок http://strukov-artemii.online:8084/img/{name} , где {name} - это название картинки с её расширением (например 1.jpеg). Требования к email: email должен соответствовать паттерну 'name@domenname.ru', где имя и домен второго уровня могут состоять только из маленьких букв и цифр, домен верхнего уровня - только из маленьких букв. Длина домена верхнего уровня - не более 3х символов.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://strukov-artemii.online:8084",
+      "description": "Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Запросы на авторизацию и аунтификацию"
+    },
+    {
+      "name": "Plants",
+      "description": "Запросы на получение растений"
+    },
+    {
+      "name": "Cart",
+      "description": "Запросы на работу с корзиной пользователя"
+    },
+    {
+      "name": "Others",
+      "description": "Остальные запросы"
+    }
+  ],
+  "paths": {
+    "/signIn": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Авторизация",
+        "description": "Авторизация пользователя с полученим токена",
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неправильные входные данные",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseError400"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Пользователь не найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseError404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/signUp": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Регистрация",
+        "description": "Регистрация пользователя с полученим токена",
+        "requestBody": {
+          "description": "Тело запроса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неправильные входные данные",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseError400"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/config": {
+      "get": {
+        "tags": [
+          "Others"
+        ],
+        "summary": "Конфиг",
+        "description": "Получение конфига",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment_methods": {
+      "get": {
+        "tags": [
+          "Others"
+        ],
+        "summary": "Способы оплаты",
+        "description": "Получение всех возможный способом оплаты",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/PaymentMethod"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plant": {
+      "get": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Растение",
+        "description": "Получение растения по id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plant"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Растение не найдено",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseErrorPlant404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plants": {
+      "get": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Все растения",
+        "description": "Запрос на получение всех растений",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/Plant"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/room-plants": {
+      "get": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Все растения комнаты",
+        "description": "Получение всех растений по room",
+        "parameters": [
+          {
+            "name": "room",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Outdoors",
+                "Indoors",
+                "Garder",
+                "Office"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomPlants"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/all-room-plants": {
+      "get": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Все растения по всем комнаты",
+        "description": "Получение всех растений по комнатам",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/RoomPlants"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/popular": {
+      "get": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Все популяные растения",
+        "description": "Запрос на получение всех популярных растений",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/Plant"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": [
+          "Plants"
+        ],
+        "summary": "Поиск по названию растения",
+        "description": "Запрос на поиск среди всех растений по названию. Строгий к регистру.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "Микс"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/Plant"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart": {
+      "get": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Получение корзины пользователя",
+        "description": "Запрос на получение корзины пользователя по токену",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "7540b25d-2cfd-40f5-a982-ef40df46bd22"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/CartItem"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Добавить новый элемент корзины",
+        "description": "Запрос на лобавление нового элемента корзины",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "7540b25d-2cfd-40f5-a982-ef40df46bd22"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartItem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cart"
+        ],
+        "summary": "Удалить элемент корзины",
+        "description": "Запрос на удаление элемента корзины",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "7540b25d-2cfd-40f5-a982-ef40df46bd22"
+            }
+          },
+          {
+            "name": "idCart",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "example": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseSuccess"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Корзина не найдена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseCartNotFound"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SignInBody": {
+        "required": [
+          "login",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string",
+            "example": "test"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
+          }
+        }
+      },
+      "SignUpBody": {
+        "required": [
+          "email",
+          "login",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string",
+            "example": "test"
+          },
+          "email": {
+            "type": "string",
+            "example": "test@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
+          }
+        }
+      },
+      "ResponseError404": {
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "User not found"
+          }
+        }
+      },
+      "ResponseErrorPlant404": {
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Plant not found"
+          }
+        }
+      },
+      "ResponseError400": {
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "This password not correct (min 8 length)"
+          }
+        }
+      },
+      "Token": {
+        "required": [
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "f30f8cd2-0436-4277-a72f-791d1fe78d6m"
+          }
+        }
+      },
+      "PaymentMethod": {
+        "required": [
+          "cover",
+          "id",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 0
+          },
+          "title": {
+            "type": "string",
+            "example": "MasterCart"
+          },
+          "cover": {
+            "type": "string",
+            "example": "mastercard.png"
+          }
+        }
+      },
+      "Config": {
+        "required": [
+          "commission_percent",
+          "packing"
+        ],
+        "type": "object",
+        "properties": {
+          "commission_percent": {
+            "type": "integer",
+            "example": 10
+          },
+          "packing": {
+            "type": "integer",
+            "example": 100
+          }
+        }
+      },
+      "Plant": {
+        "required": [
+          "cover",
+          "description",
+          "id",
+          "price",
+          "room",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Хамедорея"
+          },
+          "desciption": {
+            "type": "string",
+            "example": "Какие же зеленые джунгли без пальмы! Пальмы в любом интерьере создают атмосферу тропиков и райских пляжей! Мы подобрали для вас идеальный вариант – Хамедорею изящную с нежными, пышными метелками перистых листьев! Она очень проста в уходе и непритязательна. Ей не требуется много солнца и она отлично приспосабливается к жизни в городской квартире. Абсолютно безопасна для домашних животных и маленьких детей, если вдруг ктото из них решит попробовать сочный листочек на вкус! Самое главное достоинство Хамедореи – она отличный очиститель и увлажнитель воздуха. Хамедорея поглощает аммиак, формальдегид, толуол и бензол. Такая красотка дополнит любой интерьер, а еще она отбрасывает красивые тени на монохромные стены!"
+          },
+          "cover": {
+            "type": "string",
+            "example": "1.jpeg"
+          },
+          "price": {
+            "type": "integer",
+            "example": 1000
+          },
+          "room": {
+            "type": "string",
+            "example": "Outdoors"
+          }
+        }
+      },
+      "RoomPlants": {
+        "required": [
+          "plants",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Outdoor"
+          },
+          "plants": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Plant"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "CartItem": {
+        "required": [
+          "count",
+          "id",
+          "plant"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 0
+          },
+          "plant": {
+            "$ref": "#/components/schemas/Plant"
+          },
+          "count": {
+            "type": "integer",
+            "example": 2
+          }
+        }
+      },
+      "ResponseSuccess": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Success"
+          }
+        }
+      },
+      "ResponseCartNotFound": {
+        "required": [
+          "error"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "CartItem id=5 not found"
+          }
+        }
+      }
+    }
+  }
+}
